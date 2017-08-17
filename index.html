@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style type="text/css">
+    .main {
+        width: 700px;
+        border: 1px solid #ccc;
+        margin: 30px auto 0;
+    }
+
+    .outer {
+        width: 500px;
+        margin: 30px auto;
+        overflow: hidden;
+        height: auto;
+        position: relative;
+        background: yellowgreen;
+        border-radius: 30px 0 0 5px;
+    }
+
+    .innerLeft {
+        width: 100px;
+        height: 100%;
+        background: aqua;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: 30px 5px 30px 5px;
+    }
+
+    .l_c {
+        width: 50px;
+        height: 50px;
+        background: #ccc;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .innerRight {
+        width: 350px;
+        float: right;
+        padding-left: 50px;
+    }
+
+    .innerRight p {
+        background: pink;
+    }
+
+    .text {
+        width: 580px;
+        height: 100px;
+        background: #ccc;
+        text-align: center;
+        line-height: 100px;
+        letter-spacing: 8px;
+        font-size: 60px;
+        font-weight: bold;
+        text-shadow: 3px 3px 0 #fff, -3px 3px 0 #fff, 3px -3px 0 #fff, -3px -3px 0 #fff;
+        margin:10px auto;
+    }
+    .box{
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top:0;
+        left:0;
+        background: #eee url(imgs/timg.jpg) no-repeat center;
+        z-index: 100;
+        opacity: 1;
+    }
+    #progress{
+        width: 200px;
+        height: 50px;
+        border:1px solid #fff;
+        border-radius: 5px;
+        line-height: 50px;
+        text-align: center;
+        background: rgba(255,255,255,.5);
+        position: absolute;
+        left:50%;
+        bottom:200px;
+        margin-left:-100px;
+    }
+    .btn{
+        width: 200px;
+        height: 50px;
+    }
+    .preImg{
+        width: 500px;
+        display: block;
+        margin:20px auto;
+    }
+    </style>
+</head>
+
+<body>
+    <div class='box'>
+        <div id="progress">已加载 0 %</div>
+        <div class="btn"></div>
+    </div>
+    <div class="main">
+        <div class="outer">
+            <div class="innerLeft">
+                <div class="l_c"></div>
+            </div>
+            <div class="innerRight">
+                <p>45545</p>
+                <p>45545</p>
+                <p>45545</p>
+            </div>
+        </div>
+    </div>
+    <div class="text">
+        测试文字背景
+    </div>
+    <img class='preImg' preSrc="imgs/jn.jpg" style='width:200px;' alt="">
+    <img class='preImg' preSrc="imgs/timg1.jpg" alt="">
+    <img class='preImg' preSrc="imgs/timg2.jpg" alt="">
+    <img class='preImg' preSrc="imgs/timg3.jpg" alt="">
+    <img class='preImg' preSrc="imgs/timg4.jpg" alt="">
+    <img class='preImg' preSrc="imgs/timg5.jpg" alt="">
+</body>
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="js/preloadjs.min.js"></script>
+<script type="text/javascript">
+        var p = document.getElementById('progress');
+    
+        var manifest=[];
+        var preload;
+    
+        //定义相关JSON格式文件列表
+        function setupManifest() {
+            $(".preImg").each(function(index, el) {
+                manifest.push({ src: $(this).attr('preSrc') });
+            });
+        }
+    
+        //开始预加载
+        function startPreload() {
+            preload = new createjs.LoadQueue(true);
+            preload.on("fileload", handleFileLoad);
+            preload.on("progress", handleFileProgress);
+            preload.on("complete", loadComplete);
+            preload.on("error", loadError);
+            preload.loadManifest(manifest);
+        }
+
+        //处理单个文件加载
+        function handleFileLoad(event) {
+            console.log("文件: " + event);
+        }
+    
+        //处理加载错误
+        function loadError(evt) {
+            console.log("加载出错！", evt.text);
+        }
+    
+        //已加载完毕进度 
+        function handleFileProgress(event) {
+            p.innerText = "已加载 " + (preload.progress * 100 | 0) + " %";
+        }
+    
+        //全度资源加载完毕
+        function loadComplete(event) {
+            console.log("已加载完毕全部资源");
+            //可以开始了...
+            $(".box").fadeOut('500');
+            $(".preImg").each(function(index, el) {
+                $(this).attr('src',$(this).attr('preSrc'));
+            });
+        }
+    
+        setupManifest();
+        startPreload();
+    </script>
+</html>
